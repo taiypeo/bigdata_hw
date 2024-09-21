@@ -6,10 +6,10 @@ usage () {
     echo "  --user <admin_username> \\"
     echo "  --host <host_address> \\"
     echo "  --password <hadoop_user_password> \\"
-    echo "   [--namenode [<datanode_host_address>...]]"
+    echo "   [--namenode <namenode_address> [<datanode_host_address>...]]"
 }
 
-VALID_ARGS=$(getopt -o '' --long help,user:,host:,password:,namenode -- "$@")
+VALID_ARGS=$(getopt -o '' --long help,user:,host:,password:,namenode: -- "$@")
 if [[ $? -ne 0 ]] && usage; then
     exit 1
 fi
@@ -34,8 +34,8 @@ while true; do
         shift 2
         ;;
     --namenode)
-        IS_NAMENODE="true"
-        shift
+        NAMENODE_HOST="$2"
+        shift 2
         ;;
     --) shift;
         break
@@ -58,15 +58,20 @@ if [[ -z $HADOOP_PASSWORD ]]; then
     usage
     exit 1
 fi
-if [[ -n $IS_NAMENODE ]]; then
-    DATANODE_HOSTS="$@"
+if [[ -z $NAMENODE_HOST ]]; then
+    echo "No namenode host provided!"
+    usage
+    exit 1
 fi
+
+DATANODE_HOSTS="$@"
 
 ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << OUTEREOF
     echo "Updating the system and installing Java 11"
     yes | sudo apt-get update
     yes | sudo apt-get upgrade
     yes | sudo apt-get install openjdk-11-jre
+    yes | sudo apt-get install openjdk-11-jdk-headless
 
     echo "Creating the hadoop user"
     (
@@ -110,6 +115,7 @@ ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << OUTEREOF
     export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin
 
     echo "JAVA_HOME=\$JAVA_HOME" >> \$HADOOP_HOME/etc/hadoop/hadoop-env.sh
+    echo 'HADOOP_SSH_OPTS="-i ~/.ssh/host_key"' >> \$HADOOP_HOME/etc/hadoop/hadoop-env.sh
 
     cat > \$HADOOP_HOME/etc/hadoop/core-site.xml<< EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -133,7 +139,7 @@ ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << OUTEREOF
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://${HOST}:9000</value>
+        <value>hdfs://${NAMENODE_HOST}:9000</value>
     </property>
 </configuration>
 EOF
@@ -166,7 +172,7 @@ EOF
 EOF
 
     if [[ -n "${DATANODE_HOSTS}" ]]; then
-        echo "localhost \$datanode_host" > \$HADOOP_HOME/etc/hadoop/workers
+        echo "\$datanode_host" > \$HADOOP_HOME/etc/hadoop/workers
         tr ' ' '\n' < <(echo ${DATANODE_HOSTS}) >> \$HADOOP_HOME/etc/hadoop/workers
     fi
 OUTEREOF
