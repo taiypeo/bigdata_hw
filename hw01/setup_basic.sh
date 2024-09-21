@@ -57,6 +57,8 @@ ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << EOF
     yes | sudo apt-get install openjdk-11-jre
     sudo useradd hadoop
     sudo usermod -p "${HADOOP_PASSWORD}" hadoop
+    ssh-keygen -q -t ed25519 -f "\$HOME/.ssh/host_key" -N ""
+    chmod 600 "\$HOME/.ssh/host_key"
 EOF
 
 echo "Done!"
