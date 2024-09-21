@@ -3,11 +3,11 @@
 usage () {
     echo "Usage:"
     echo "./distribute_namenode_key.sh \\"
-    echo "  --namenode-user-host <username>@<namenode_host_address> \\"
-    echo "  <username>@<datanode_host_address>..."
+    echo "  --namenode-host <namenode_host_address> \\"
+    echo "  <datanode_host_address>..."
 }
 
-VALID_ARGS=$(getopt -o '' --long help,namenode-user-host: -- "$@")
+VALID_ARGS=$(getopt -o '' --long help,namenode-host: -- "$@")
 if [[ $? -ne 0 ]] && usage; then
     exit 1
 fi
@@ -19,8 +19,8 @@ while true; do
         usage
         exit 0
         ;;
-    --namenode-user-host)
-        NAMENODE_USER_HOST="$2"
+    --namenode-host)
+        NAMENODE_HOST="$2"
         shift 2
         ;;
     --) shift;
@@ -29,18 +29,18 @@ while true; do
   esac
 done
 
-if [[ -z $NAMENODE_USER_HOST ]]; then
-    echo "No namenode user-host pair provided!"
+if [[ -z $NAMENODE_HOST ]]; then
+    echo "No namenode host provided!"
     usage
     exit 1
 fi
 
-scp "$NAMENODE_USER_HOST:~/.ssh/host_key.pub" host_key.pub
+scp "hadoop@$NAMENODE_HOST:/home/hadoop/.ssh/host_key.pub" host_key.pub
 PUBLIC_KEY=$(cat host_key.pub)
 rm host_key.pub
 
-for user_host in "$@"; do
-    ssh -x -a "$user_host" /bin/bash << EOF
+for host in "$@"; do
+    ssh -x -a "hadoop@$host" /bin/bash << EOF
         echo "${PUBLIC_KEY}" >> ~/.ssh/authorized_keys
 EOF
 done

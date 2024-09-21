@@ -46,10 +46,15 @@ ssh -x -a "$USER_HOST" /bin/bash << EOF
     yes | sudo apt-get update
     yes | sudo apt-get upgrade
     yes | sudo apt-get install openjdk-11-jre
-    sudo useradd hadoop
-    sudo usermod -p "${HADOOP_PASSWORD}" hadoop
+    sudo useradd -m hadoop -p "${HADOOP_PASSWORD} -s /bin/bash" || echo "User already exists!"
+    (
+        sudo cp "\$HOME/.ssh/authorized_keys" "/home/hadoop/.ssh/authorized_keys" && \
+        sudo chown hadoop:hadoop "/home/hadoop/.ssh/authorized_keys"
+    ) || echo "File does not exist! Skipping"
+    sudo su hadoop
     ssh-keygen -q -t ed25519 -f "\$HOME/.ssh/host_key" -N ""
     chmod 600 "\$HOME/.ssh/host_key"
+    chmod 600 "\$HOME/.ssh/host_key.pub"
 EOF
 
 echo "Done!"
