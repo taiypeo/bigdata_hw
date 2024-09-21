@@ -1,5 +1,7 @@
 # Развертывание минимального кластера Hadoop
 
+*Данная последовательность действий проверялась на работоспособность на Яндекс Облаке.*
+
 Пусть у нас есть 3 ноды, одна из которых будет NameNode, а остальные -- DataNode.
 Пусть у них у всех есть sudo пользователь admin.
 Также работаем в предположении, что для каждого хоста есть как публичный IP адрес, чтобы получить доступ с нашей машины,
@@ -38,6 +40,8 @@ bash distribute_namenode_key.sh \
     "datanode_public_ip1" \
     "datanode_public_ip2"
 
-# Форматируем HDFS и стартуем кластер
-bash format_and_start_hdfs.sh --namenode-host "namenode_public_ip"
+# Заходим на NameNode, форматируем HDFS и стартуем кластер
+ssh hadoop@namenode_public_ip
+hdfs namenode -format
+start-dfs.sh
 ```
