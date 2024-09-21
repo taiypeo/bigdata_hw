@@ -2,10 +2,14 @@
 
 usage () {
     echo "Usage:"
-    echo "./setup_host.sh --user-host <username>@<host_address> --password <hadoop_user_password>"
+    echo "./setup_host.sh \\"
+    echo "  --user <admin_username> \\"
+    echo "  --host <host_address> \\"
+    echo "  --password <hadoop_user_password> \\"
+    echo "   [--namenode [<datanode_host_address>...]]"
 }
 
-VALID_ARGS=$(getopt -o '' --long help,user-host:,password: -- "$@")
+VALID_ARGS=$(getopt -o '' --long help,user:,host:,password:,namenode -- "$@")
 if [[ $? -ne 0 ]] && usage; then
     exit 1
 fi
@@ -17,13 +21,21 @@ while true; do
         usage
         exit 0
         ;;
-    --user-host)
-        USER_HOST="$2"
+    --user)
+        REMOTE_USER="$2"
+        shift 2
+        ;;
+    --host)
+        HOST="$2"
         shift 2
         ;;
     --password)
         HADOOP_PASSWORD="$2"
         shift 2
+        ;;
+    --namenode)
+        IS_NAMENODE="true"
+        shift
         ;;
     --) shift;
         break
@@ -31,8 +43,13 @@ while true; do
   esac
 done
 
-if [[ -z $USER_HOST ]]; then
-    echo "No user-host pair provided!"
+if [[ -z $REMOTE_USER ]]; then
+    echo "No user provided!"
+    usage
+    exit 1
+fi
+if [[ -z $HOST ]]; then
+    echo "No host provided!"
     usage
     exit 1
 fi
@@ -41,29 +58,115 @@ if [[ -z $HADOOP_PASSWORD ]]; then
     usage
     exit 1
 fi
+if [[ -n $IS_NAMENODE ]]; then
+    DATANODE_HOSTS="$@"
+fi
 
-ssh -x -a "$USER_HOST" /bin/bash << EOF
+ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << OUTEREOF
+    echo "Updating the system and installing Java 11"
     yes | sudo apt-get update
     yes | sudo apt-get upgrade
     yes | sudo apt-get install openjdk-11-jre
 
-    sudo useradd -m hadoop -p "${HADOOP_PASSWORD} -s /bin/bash" || echo "User already exists!"
+    echo "Creating the hadoop user"
     (
+        sudo useradd -m hadoop -p "${HADOOP_PASSWORD}" && \
+        sudo chsh -s /bin/bash hadoop
+    ) || echo "User already exists! Skipping"
+    (
+        sudo mkdir -p "/home/hadoop/.ssh" && \
+        sudo chown hadoop:hadoop "/home/hadoop/.ssh" && \
         sudo cp "\$HOME/.ssh/authorized_keys" "/home/hadoop/.ssh/authorized_keys" && \
         sudo chown hadoop:hadoop "/home/hadoop/.ssh/authorized_keys"
     ) || echo "File does not exist! Skipping"
-    sudo su hadoop
 
-    ssh-keygen -q -t ed25519 -f "\$HOME/.ssh/host_key" -N ""
+    sudo su hadoop
+    cd
+
+    echo "Generating the hadoop user ssh keys"
+    yes | ssh-keygen -q -t ed25519 -f "\$HOME/.ssh/host_key" -N ""
     chmod 600 "\$HOME/.ssh/host_key"
     chmod 600 "\$HOME/.ssh/host_key.pub"
 
-    wget "https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz"
-    tar -xzf "hadoop-3.4.0.tar.gz"
+    if [[ ! -f "hadoop-3.4.0.tar.gz" ]]; then
+        echo "Downloading Hadoop"
+        wget -q "https://dlcdn.apache.org/hadoop/common/hadoop-3.4.0/hadoop-3.4.0.tar.gz"
+        tar -xzf "hadoop-3.4.0.tar.gz"
+    fi
+
+    echo "Configuring Hadoop"
+    echo 'export HADOOP_HOME=/home/hadoop/hadoop-3.4.0' >> .profile
+    echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> .profile
+    echo 'export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin' >> .profile
+
+    echo 'export HADOOP_HOME=/home/hadoop/hadoop-3.4.0' >> .bashrc
+    echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> .bashrc
+    echo 'export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin' >> .bashrc
+
     export HADOOP_HOME=/home/hadoop/hadoop-3.4.0
     export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
-    echo "JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
-    export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+    export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin
+
+    echo "JAVA_HOME=\$JAVA_HOME" >> \$HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+    cat > \$HADOOP_HOME/etc/hadoop/core-site.xml<< EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://${HOST}:9000</value>
+    </property>
+</configuration>
 EOF
+
+    cat > \$HADOOP_HOME/etc/hadoop/hdfs-site.xml<< EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+    <property>
+        <name>dfs.replication</name>
+        <value>3</value>
+    </property>
+</configuration>
+EOF
+
+    if [[ -n "${DATANODE_HOSTS}" ]]; then
+        echo "localhost \$datanode_host" > \$HADOOP_HOME/etc/hadoop/workers
+        tr ' ' '\n' < <(echo ${DATANODE_HOSTS}) >> \$HADOOP_HOME/etc/hadoop/workers
+    fi
+OUTEREOF
 
 echo "Done!"
