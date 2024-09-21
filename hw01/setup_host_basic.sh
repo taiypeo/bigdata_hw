@@ -2,10 +2,10 @@
 
 usage () {
     echo "Usage:"
-    echo "./setup_basic.sh --host <host_address> --user <remote_user> --password <hadoop_user_password>"
+    echo "./setup_host_basic.sh --user-host <username>@<host_address> --password <hadoop_user_password>"
 }
 
-VALID_ARGS=$(getopt -o '' --long help,user:,host:,password: -- "$@")
+VALID_ARGS=$(getopt -o '' --long help,user-host:,password: -- "$@")
 if [[ $? -ne 0 ]] && usage; then
     exit 1
 fi
@@ -17,12 +17,8 @@ while true; do
         usage
         exit 0
         ;;
-    --host)
-        HOST="$2"
-        shift 2
-        ;;
-    --user)
-        REMOTE_USER="$2"
+    --user-host)
+        USER_HOST="$2"
         shift 2
         ;;
     --password)
@@ -35,13 +31,8 @@ while true; do
   esac
 done
 
-if [[ -z $HOST ]]; then
-    echo "No host provided!"
-    usage
-    exit 1
-fi
-if [[ -z $REMOTE_USER ]]; then
-    echo "No remote user provided!"
+if [[ -z $USER_HOST ]]; then
+    echo "No user-host pair provided!"
     usage
     exit 1
 fi
@@ -51,7 +42,7 @@ if [[ -z $HADOOP_PASSWORD ]]; then
     exit 1
 fi
 
-ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << EOF
+ssh -x -a "$USER_HOST" /bin/bash << EOF
     yes | sudo apt-get update
     yes | sudo apt-get upgrade
     yes | sudo apt-get install openjdk-11-jre
