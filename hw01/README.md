@@ -31,7 +31,8 @@ bash setup_host.sh \
     --password "HadoopUserPassword" \
     --namenode namenode_private_ip
 
-# Перекидываем ssh ключ NameNode на DataNodes
+# Перекидываем публичный ssh ключ NameNode на DataNodes,
+# чтобы с NameNode можно было достучаться до DataNodes
 bash distribute_namenode_key.sh \
     --namenode-host "namenode_public_ip" \
     "datanode_public_ip1" \
