@@ -98,10 +98,12 @@ ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << OUTEREOF
     echo 'export HADOOP_HOME=/home/hadoop/hadoop-3.4.0' >> .profile
     echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> .profile
     echo 'export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin' >> .profile
+    echo 'export HADOOP_SSH_OPTS="-i ~/.ssh/host_key"' >> .profile
 
     echo 'export HADOOP_HOME=/home/hadoop/hadoop-3.4.0' >> .bashrc
     echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> .bashrc
     echo 'export PATH=\$PATH:\$HADOOP_HOME/bin:\$HADOOP_HOME/sbin' >> .bashrc
+    echo 'export HADOOP_SSH_OPTS="-i ~/.ssh/host_key"' >> .bashrc
 
     export HADOOP_HOME=/home/hadoop/hadoop-3.4.0
     export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))

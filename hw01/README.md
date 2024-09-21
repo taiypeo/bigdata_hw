@@ -18,4 +18,6 @@ bash distribute_namenode_key.sh \
     --namenode-host "namenode_public_ip" \
     "datanode_public_ip1" \
     "datanode_public_ip2"
+
+bash format_and_start_hdfs.sh --namenode-host "namenode_public_ip"
 ```

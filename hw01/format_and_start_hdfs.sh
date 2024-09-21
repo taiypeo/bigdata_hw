@@ -2,9 +2,8 @@
 
 usage () {
     echo "Usage:"
-    echo "./distribute_namenode_key.sh \\"
-    echo "  --namenode-host <namenode_host_address> \\"
-    echo "  <datanode_host_address>..."
+    echo "./format_and_start_hdfs.sh \\"
+    echo "  --namenode-host <namenode_host_address>"
 }
 
 VALID_ARGS=$(getopt -o '' --long help,namenode-host: -- "$@")
@@ -35,18 +34,10 @@ if [[ -z $NAMENODE_HOST ]]; then
     exit 1
 fi
 
-scp "hadoop@$NAMENODE_HOST:/home/hadoop/.ssh/host_key.pub" host_key.pub
-PUBLIC_KEY=$(cat host_key.pub)
-rm host_key.pub
-
 ssh -x -a "hadoop@$NAMENODE_HOST" /bin/bash << EOF
-    echo "${PUBLIC_KEY}" >> ~/.ssh/authorized_keys
+    source .profile
+    yes | hdfs namenode -format
+    start-dfs.sh
 EOF
-
-for host in "$@"; do
-    ssh -x -a "hadoop@$host" /bin/bash << EOF
-        echo "${PUBLIC_KEY}" >> ~/.ssh/authorized_keys
-EOF
-done
 
 echo "Done!"
