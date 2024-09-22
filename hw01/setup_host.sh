@@ -75,7 +75,7 @@ ssh -x -a "$REMOTE_USER@$HOST" /bin/bash << OUTEREOF
 
     echo "Creating the hadoop user"
     (
-        sudo useradd -m hadoop -p "${HADOOP_PASSWORD}" && \
+        sudo useradd -m hadoop -p "\$(echo ${HADOOP_PASSWORD} | openssl passwd -1 -stdin)" && \
         sudo chsh -s /bin/bash hadoop
     ) || echo "User already exists! Skipping"
     (
