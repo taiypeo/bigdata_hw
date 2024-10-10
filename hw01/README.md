@@ -12,7 +12,7 @@
 Прежде чем разворачивать кластер, настроим NOPASSWD доступ к sudo **на каждом хосте** (namenode и все datanode):
 1) `ssh team@public_ip`
 2) На хосте запускаем `sudo visudo`
-3) Добавляем перед `@includedir /etc/sudoers.d` вот это: `team ALL=(ALL) NOPASSWD:ALL`
+3) Добавляем перед (строкой выше) `@includedir /etc/sudoers.d` вот это: `team ALL=(ALL) NOPASSWD:ALL`
 
 Теперь можно развернуть кластер таким набором команд:
 ```bash
