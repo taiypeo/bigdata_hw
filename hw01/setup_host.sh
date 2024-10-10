@@ -168,6 +168,10 @@ EOF
         <name>dfs.replication</name>
         <value>3</value>
     </property>
+    <property>
+        <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+        <value>false</value>
+    </property>
 </configuration>
 EOF
 
