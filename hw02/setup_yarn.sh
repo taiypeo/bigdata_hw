@@ -19,7 +19,7 @@ while true; do
         exit 0
         ;;
     --host)
-        $HOST_ADDRESS="$2"
+        HOST_ADDRESS="$2"
         shift 2
         ;;
     --) shift;
