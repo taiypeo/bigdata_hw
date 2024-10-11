@@ -7,9 +7,9 @@
 Для запуска, выполним на jump node следующие команды:
 ```bash
 # !!! Не забываем здесь и ниже заменять .*_ip на настоящие IP адреса !!!
-./setup_host --host namenode_public_ip
-./setup_host --host datanode_public_ip1
-./setup_host --host datanode_public_ip2
+./setup_yarn --host namenode_public_ip
+./setup_yarn --host datanode_public_ip1
+./setup_yarn --host datanode_public_ip2
 
 ssh hadoop@namenode_public_ip
 # ==== Команды ниже уже вводятся не на JumpNode, а на NameNode!!!! ====
