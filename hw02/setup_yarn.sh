@@ -35,6 +35,7 @@ if [[ -z $HOST_ADDRESS ]]; then
 fi
 
 ssh -x -a "hadoop@$HOST_ADDRESS" /bin/bash << OUTEREOF
+    export HADOOP_HOME=/home/hadoop/hadoop-3.4.0
     cat > \$HADOOP_HOME/etc/hadoop/mapred-site.xml<< EOF
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
