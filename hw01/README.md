@@ -51,7 +51,7 @@ bash distribute_namenode_key.sh \
 
 # Заходим на NameNode, форматируем HDFS и стартуем кластер
 ssh hadoop@namenode_public_ip
-# ==== Команды ниже уже вводятся не локально, а на NameNode!!!! ====
+# ==== Команды ниже уже вводятся не на JumpNpde, а на NameNode!!!! ====
 hdfs namenode -format
 start-dfs.sh
 ```
