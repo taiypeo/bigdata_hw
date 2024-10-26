@@ -89,3 +89,8 @@ sudo systemctl reload nginx
 ```
 
 И по `http://jumpnode_public_ip:9870` в браузере будет доступен веб-интерфейс.
+
+## Результат
+По URL выше во вкладке "Datanodes" видны 3 датаноды
+![image](https://github.com/user-attachments/assets/17c98f3b-68e9-4e73-a24f-7453124f7b7a)
+
