@@ -14,7 +14,7 @@
 ssh hadoop@namenode_public_ip
 # ==== Команды ниже уже вводятся не на JumpNode, а на NameNode!!!! ====
 start-yarn.sh
-mapred --deamon start historyserver
+mapred --daemon start historyserver
 ```
 
 ## Настройка jump node
@@ -57,3 +57,12 @@ sudo systemctl reload nginx
 
 И по `http://jumpnode_public_ip:8088` в браузере будет доступен веб-интерфейс YARN,
 а по `http://jumpnode_public_ip:19888` -- веб-интерфейс HistoryServer.
+
+## Результат
+### YARN
+![image](https://github.com/user-attachments/assets/458cf544-0eb8-407c-8bbd-c4ad55fe2444)
+
+### HistoryServer
+![image](https://github.com/user-attachments/assets/0852d303-68d7-4efd-b982-313a310d94b8)
+
+
