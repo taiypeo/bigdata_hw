@@ -118,7 +118,6 @@ use test;
 CREATE TABLE IF NOT EXISTS test.dataset (
     `duration` string,
     `protocol_type` string,
-    `service` string,
     `flag` string,
     `src_bytes` string,
     `dst_bytes` string,
@@ -158,6 +157,7 @@ CREATE TABLE IF NOT EXISTS test.dataset (
     `dst_host_rerror_rate` string,
     `dst_host_srv_rerror_rate` string,
     `label` string)
+    PARTITIONED BY (`service` string)
     ROW FORMAT DELIMITED FIELDS TERMINATED BY ',';
 LOAD DATA INPATH '/input/dataset.csv' INTO TABLE test.dataset;
 ```
@@ -168,13 +168,50 @@ SELECT COUNT(*) FROM dataset;
 ```
 
 Результат:
-Теперь у нас есть Apache Hive таблица с таким числом строк.
+Теперь у нас есть партиционированная Apache Hive таблица с таким числом строк.
 ```
 +---------+
 |   _c0   |
 +---------+
 | 494021  |
 +---------+
+```
+
+Можем посмотреть, какие получились партиции:
+```
+SHOW PARTITIONS dataset;
+```
+
+Результат:
+```
++--------------------------+
+|        partition         |
++--------------------------+
+| service=%22label%22      |
+| service=back             |
+| service=buffer_overflow  |
+| service=ftp_write        |
+| service=guess_passwd     |
+| service=imap             |
+| service=ipsweep          |
+| service=land             |
+| service=loadmodule       |
+| service=multihop         |
+| service=neptune          |
+| service=nmap             |
+| service=normal           |
+| service=perl             |
+| service=phf              |
+| service=pod              |
+| service=portsweep        |
+| service=rootkit          |
+| service=satan            |
+| service=smurf            |
+| service=spy              |
+| service=teardrop         |
+| service=warezclient      |
+| service=warezmaster      |
++--------------------------+
 ```
 
 ![image](https://github.com/user-attachments/assets/fbe3f9da-3eba-4249-a0a4-7583408aedc6)
