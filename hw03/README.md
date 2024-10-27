@@ -175,3 +175,9 @@ SELECT COUNT(*) FROM dataset;
 | 494021  |
 +---------+
 ```
+
+![image](https://github.com/user-attachments/assets/fbe3f9da-3eba-4249-a0a4-7583408aedc6)
+![image](https://github.com/user-attachments/assets/2ea18ef3-ffc9-46cc-a788-febebd2e8475)
+
+
+
