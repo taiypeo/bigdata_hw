@@ -92,3 +92,9 @@ CREATE DATABASE test;
 SHOW DATABASES;
 DESCRIBE DATABASE test;
 ```
+
+Результат установки и настройки:
+![image](https://github.com/user-attachments/assets/52280501-133b-47b2-b89a-63403c2d96a7)
+![image](https://github.com/user-attachments/assets/5ca4f517-8bd8-4702-9fa9-bb71dc15e0c2)
+
+
