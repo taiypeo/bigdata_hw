@@ -63,6 +63,9 @@ if [[ ! -f "apache-hive-4.0.1-bin.tar.gz" ]]; then
     echo "Downloading Apache Hive"
     wget -q "https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz"
     tar -xzf "apache-hive-4.0.1-bin.tar.gz"
+    cd apache-hive-4.0.1-bin/bin/lib
+    echo "Downloading postgres JDBC driver"
+    wget -q https://jdbc.postgresql.org/download/postgresql-42.7.4.jar
 fi
 EOF
 
