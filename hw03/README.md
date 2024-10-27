@@ -168,6 +168,7 @@ SELECT COUNT(*) FROM dataset;
 ```
 
 Результат:
+
 Теперь у нас есть партиционированная Apache Hive таблица с таким числом строк.
 ```
 +---------+
@@ -214,5 +215,6 @@ SHOW PARTITIONS dataset;
 +--------------------------+
 ```
 
-![image](https://github.com/user-attachments/assets/fbe3f9da-3eba-4249-a0a4-7583408aedc6)
+![image](https://github.com/user-attachments/assets/a8f9eaf1-f6e7-4364-8d49-9cbd04762565)
+
 ![image](https://github.com/user-attachments/assets/2ea18ef3-ffc9-46cc-a788-febebd2e8475)
