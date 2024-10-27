@@ -4,7 +4,7 @@
 Для начала, требуется на NameNode установить postgres и создать БД. С JumpNode выполняем:
 ```bash
 # ====== Ниже на JumpNode! ======
-ssh team@namenode-ip`
+ssh team@namenode-ip
 # ====== Ниже уже на NameNode! ======
 sudo apt install postgresql
 sudo -i -u postgres
