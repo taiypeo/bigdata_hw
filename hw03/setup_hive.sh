@@ -8,7 +8,7 @@ usage () {
     echo "  --hive-password <hive_postgres_password>"
 }
 
-VALID_ARGS=$(getopt -o '' --long help,password: -- "$@")
+VALID_ARGS=$(getopt -o '' --long help,namenode:,hadoop-password:,hive-password: -- "$@")
 if [[ $? -ne 0 ]] && usage; then
     exit 1
 fi
