@@ -69,3 +69,26 @@ bash setup_hive.sh \
     --namenode namenode_ip \
     --hive-password HivePostgresPassword
 ```
+
+Теперь, для запуска Apache Hive на Jump Node выполним следующие команды:
+```bash
+su hadoop
+source ~/.profile
+hive \
+    --hiveconf hive.server2.enable.doAs=false \
+    --hiveconf hive.security.authorization.enabled=false \
+    --service hiveserver2 \
+    1>> /tmp/hs2.log 2>> /tmp/hs2.log
+```
+
+Проверить работу можно так в другом терминале:
+```bash
+su hadoop
+source ~/.profile
+beeline -u jdbc:hive2://jumpnode-ip:5433
+# ====== Ниже в beeline! ======
+SHOW DATABASES;
+CREATE DATABASE test;
+SHOW DATABASES;
+DESCRIBE DATABASE test;
+```
