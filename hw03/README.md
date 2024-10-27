@@ -11,7 +11,7 @@ sudo -i -u postgres
 psql
 # ====== Ниже уже в psql (не забывая поставить хороший пароль ниже)! ======
 CREATE DATABASE metastore;
-CREATE USER hive with password 'hiveUserPassword';
+CREATE USER hive with password 'HivePostgresPassword';
 GRANT ALL PRIVILEGES ON DATABASE "metastore" TO hive;
 ALTER DATABASE metastore OWNER TO hive;
 \q
@@ -56,5 +56,7 @@ sudo apt install postgresql-client-16
 На JumpNode под sudo пользователем (team) требуется запустить скрипт setup_hive.sh:
 ```bash
 bash setup_hive.sh \
-    --password HadoopUserPassword
+    --namenode namenode_ip \
+    --hadoop-password HadoopUserPassword \
+    --hive-password HivePostgresPassword
 ```
