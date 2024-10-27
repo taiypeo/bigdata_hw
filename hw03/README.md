@@ -53,10 +53,8 @@ sudo apt install postgresql-client-16
 ```
 
 ## Установка и настройка Apache Hive
-На JumpNode требуется запустить скрипт setup_hive.sh (team -- sudo пользователь):
+На JumpNode под sudo пользователем (team) требуется запустить скрипт setup_hive.sh:
 ```bash
 bash setup_hive.sh \
-    --user team
-    --host jumpnode-ip
     --password HadoopUserPassword
 ```
