@@ -52,18 +52,18 @@ echo "Creating the hadoop user"
     sudo chown hadoop:hadoop "/home/hadoop/.ssh/authorized_keys"
 ) || echo "File does not exist! Skipping"
 
-sudo su hadoop
+sudo -i -u hadoop bash << EOF
 cd
-
 echo "Generating the hadoop user ssh keys"
-yes | ssh-keygen -q -t ed25519 -f "$HOME/.ssh/host_key" -N ""
-chmod 600 "$HOME/.ssh/host_key"
-chmod 600 "$HOME/.ssh/host_key.pub"
+yes | ssh-keygen -q -t ed25519 -f "\$HOME/.ssh/host_key" -N ""
+chmod 600 "\$HOME/.ssh/host_key"
+chmod 600 "\$HOME/.ssh/host_key.pub"
 
 if [[ ! -f "apache-hive-4.0.1-bin.tar.gz" ]]; then
     echo "Downloading Apache Hive"
     wget -q "https://dlcdn.apache.org/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.gz"
     tar -xzf "apache-hive-4.0.1-bin.tar.gz"
 fi
+EOF
 
 echo "Done!"
