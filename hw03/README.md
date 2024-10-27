@@ -54,7 +54,7 @@ sudo apt install postgresql-client-16
 
 ## Установка и настройка Apache Hive
 На JumpNode под sudo пользователем (team) требуется запустить скрипт setup_host.sh из
-первой домашней работы (`hw01/`):
+первой домашней работы (`hw01/`, не забывая поставить NOPASSWD доступ к sudo для team, см. `hw01/README.md`):
 ```bash
 bash setup_host.sh \
     --user team \

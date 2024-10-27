@@ -95,6 +95,14 @@ echo 'export HIVE_HOME=/home/hadoop/apache-hive-4.0.1-bin' >> ~/.profile
 echo 'export HIVE_CONF_DIR=/home/hadoop/apache-hive-4.0.1-bin/conf' >> ~/.profile
 echo 'export HIVE_AUX_JARS_PATH=/home/hadoop/apache-hive-4.0.1-bin/lib/*' >> ~/.profile
 echo 'export PATH=\$PATH:\$HIVE_HOME/bin' >> ~/.profile
+source ~/.profile
+
+hdfs dfs -mkdir -p /user/hive/warehouse
+hdfs dfs -chmod g+w /tmp
+hdfs dfs -chmod g+w /user/hive/warehouse
+
+cd apache-hive-4.0.1-bin
+bin/schematool -dbType postgres -initSchema
 OUTEREOF
 
 echo "Done!"
