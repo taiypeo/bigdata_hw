@@ -68,6 +68,7 @@ sudo systemctl reload nginx
 ## Аутентификация для Nginx
 Предполагая, что действия из части "Аутентификация для Nginx" в `hw01/` уже были выполнены
 для веб-интерфейса namenode, аналогично настроим аутентификацию для YARN и HistoryServer.
+На jump node выполним:
 
 ```bash
 sudo vim /etc/nginx/sites-available/ya
