@@ -94,3 +94,23 @@ sudo systemctl reload nginx
 По URL выше во вкладке "Datanodes" видны 3 датаноды
 ![image](https://github.com/user-attachments/assets/17c98f3b-68e9-4e73-a24f-7453124f7b7a)
 
+## Аутентификация для Nginx
+На jump node выполним следующие действия (по инструкции https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-http-basic-authentication/):
+```bash
+sudo apt-get install apache2-utils
+sudo mkdir -p /etc/apache2
+sudo htpasswd -c /etc/apache2/.htpasswd hadoop
+sudo vim /etc/nginx/sites-available/nn
+```
+
+И внутри `location / {...}` добавляем две строки
+- `auth_basic "Namenode interface";`
+- `auth_basic_user_file /etc/apache2/.htpasswd;`
+
+Далее сохраняем файл и делаем:
+```bash
+sudo systemctl reload nginx
+```
+
+Теперь для доступа к интерфейсу namenode потребуется ввести логин "hadoop" и пароль, указанный
+при вызове команды `htpasswd`.

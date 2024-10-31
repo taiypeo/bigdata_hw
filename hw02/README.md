@@ -65,4 +65,29 @@ sudo systemctl reload nginx
 ### HistoryServer
 ![image](https://github.com/user-attachments/assets/0852d303-68d7-4efd-b982-313a310d94b8)
 
+## Аутентификация для Nginx
+Предполагая, что действия из части "Аутентификация для Nginx" в `hw01/` уже были выполнены
+для веб-интерфейса namenode, аналогично настроим аутентификацию для YARN и HistoryServer.
 
+```bash
+sudo vim /etc/nginx/sites-available/ya
+```
+Внутри `location / {...}` добавляем строки:
+- `auth_basic "YARN interface";`
+- `auth_basic_user_file /etc/apache2/.htpasswd;`
+
+Далее,
+```bash
+sudo vim /etc/nginx/sites-available/dh
+```
+Внутри `location / {...}` добавляем строки:
+- `auth_basic "HistoryServer interface";`
+- `auth_basic_user_file /etc/apache2/.htpasswd;`
+
+И перезагружаем nginx:
+```bash
+sudo systemctl reload nginx
+```
+
+Теперь для доступа к интерфейсам YARN и HistoryServer потребуется ввести логин "hadoop" и пароль, указанный
+при вызове команды `htpasswd` в аналогичной части в `hw01/`.
