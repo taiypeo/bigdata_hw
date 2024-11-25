@@ -6,6 +6,7 @@ bash setup_spark.sh --namenode-host namenode-ip
 
 В отдельном терминале на jump node под юзером hadoop запустим:
 ```bash
+source ~/.profile
 hive
     --hiveconf hive.server2.enable.doAs=false
     --hiveconf hive.security.authorization.enabled=false
