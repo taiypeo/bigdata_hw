@@ -35,6 +35,7 @@ python
 домашних заданий):
 ```python
 from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 session = SparkSession.builder \
     .master("yarn") \
     .appName("spark-with-yarn") \
@@ -43,6 +44,23 @@ session = SparkSession.builder \
     .enableHiveSupport() \
     .getOrCreate()
 
-df = session.read.csv("/input/dataset.csv")
-df.write.saveAsTable("testTable")
+df = session.read.csv(
+    "/input/dataset.csv",
+    header=True,
+    inferSchema=True
+)
+
+# Попробуем выполнить какой-то запрос
+df_transformed = df.select([
+    F.max(df.duration),
+    F.min(df.src_bytes),
+    F.max(df.dst_bytes),
+    F.count_distinct(df.label),
+    F.median(df['count']),
+    F.sum(df.rerror_rate),
+])
+df_transformed.show()
+
+df_transformed.write.save("/input/dataset_transformed.csv", format="csv")
+df_transformed.write.saveAsTable("testTable")
 ```
